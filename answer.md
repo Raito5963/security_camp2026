@@ -205,8 +205,41 @@ pagePropsレスポンスは、送信データを含むJsonである。
 > 上記コードの実行結果の画像を張る
 
 #### 攻撃手法 - キャッシュポイズニングを利用したDoS攻撃
-キャッシュポイズニングはキャッシュキーにURLパラメータが含まれていることを利用する。これにより、クライアントサイトへの干渉を防ぐだけでなく、キャッシュをリセットしてリクエスト変更がレスポンスに影響するかどうかを確認できる。ただし、リクエストがサーバに到達しない場合は不可能。
+1. キャッシュキーの盲点を突く<br />
+多くのキャッシュシステム(CDNなど)は、効率化のためにURLのパラメータを無視してデータを保存する設定になっている。
+- リクエストA: `example.com/?__nextDataReq=1`
+- リクエストB: `example.com`
+キャッシュサーバーから見るとこの2つは同じページの世急だと認識されることを前提として攻撃を行う。
+2. ポイズニング<br />
+攻撃者はあえてパラメータ付きのURL(パラメータA)を送る。すると、Next.jsのサーバは`__nextDataReq`を認識し、HTMLではなくJSONデータ(pageProps)の生データ
+を返す。(後述)
+3. キャッシュの書き換え<br />
+キャッシュサーバは、サーバから送られてきたJSONデータを受け取るが、パラメータは無視するため、`example.com`の正しいデータとして保存してしまう。
+4. 発動<br />
+その後、一般ユーザが普通に`example.com`(リクエストB)にアクセス。キャッシュサーバは保存したデータ(JSON)をHTMLの代わりに返してしまう。その結果、本来であればHTMLページが表示されるが、これによりJSONデータが表示される。ユーザはページを表示できなくなり、キャッシュが削除されるまでサービス停止と同等の状態に陥る。
 
+##### 補足
+Next.jsの内部([server/base-server.ts](https://github.com/vercel/next.js/blob/canary/packages/next/src/server/base-server.ts))にリクエストによってHTMLを返すかJSONを返すか判定するロジックがある。以下はそのロジックを抜粋したもの。
+```typescript
+// Next.js /server/base-server.ts:2123
+if(
+    hasFallback ||
+    staticPath?.includes(resolvedUrlPathname) ||
+    // this signals revalidation in deploy environments
+    // TODO: make this more generic
+    req.headers['x-now-route-matches']
+){
+    isSSG = true
+} else if (!this.renderOpts.dev) {
+    isSSG ||= !! prerenderManifest.routes[toRoute(pathname)]
+}
+```
+通常、Next.jsはリクエストに対して以下のように振る舞う。
+- SSR: リクエストごとに内容が変化するので、キャッシュさせない(Cache-Control: private)
+- SSG: 内容が固定なので、キャッシュさせる(Cache-Control: s-maxage=...)
+
+上記のロジックにある`req.headers[x-now-route-matches]`は本来、デプロイ環境で再検証を行うための内部的な信号だが、外部からこのヘッダーを送り付けると、コード上の`isSSG = true`が強制的に発動する。これにより、サーバは静的だと勘違いし、本来付与してはいけないs-maxage(キャッシュの有効期限)を付与してしまう。<br />
+さらにパラメータとして`__nextDataReq=1`を加えると、[server/base-server.ts](https://github.com/vercel/next.js/blob/canary/packages/next/src/server/base-server.ts)の`handleNextDataRequest`(686行~775行)メソッドが稼働する。`isSSG`の判定と組み合わさることでサーバはSSGページ用のJSONデータを生成し、それをキャッシュしてよいというヘッダーをつけて返信してしまう。
 
 
 ### (4) その他事例に関して感じたこと・気が付いたこと
