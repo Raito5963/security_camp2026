@@ -312,9 +312,13 @@ export default Poc;
 ![](image-5.png)<br />
 無事、ポイズニングすることができました。
 
+> この後、localhost:3000 (パラメータ無し)でアクセスしても同様の状態にならない。（Geminiが言うにはキャッシュの設定がうまくできてないとのこと。要修正。）
+
 3. XSSペイロードを仕込んでみる。<br />
 ヘッダーの`User-Agent`に`<script>alert('Poisoned!')</script>`を仕込んでみます。<br />
 ![](image-6.png)
+
+> JSONファイルとして出力される。({User-Agent:"<script>...</script>"})原因は謎なので2.の問題完了後に確認する。
 
 ### (4) その他事例に関して感じたこと・気が付いたこと
 #### 1. Vercelホスティングであればこの攻撃が成立しないらしい
@@ -328,5 +332,39 @@ export default Poc;
 - [Next.js; getStaticProps](https://nextjs.org/docs/pages/building-your-application/data-fetching/get-static-props)
 - [Next.js; getServerSideProps](https://nextjs.org/docs/pages/building-your-application/data-fetching/get-server-side-props)
 
-# Q.5 ()
+# Q.5 (LLMアプリケーションからAIエージェントへの深化に伴う脅威モデリング)
+### (1) 
+#### 用語について
+問題文に登場するいくつかの用語を知らなかったため、ここにまとめる。
+- RAG (Retrieval-Augmented Generation)<br />
+LLMが知らない最新情報や社内文書を、外部のデータベースから調べて回答する仕組みのこと。
+- OWASP GenAI Security Project<br />
+Webセキュリティ団体OWASPがまとめたAIアプリケーションのよくある脆弱性をまとめたもの。[サイト](https://genai.owasp.org/)
+- MITRE ATLAS<br />
+攻撃者がどんな手順で攻撃を行うかまとめたDBのAI版。攻撃用のカタログ的なもの。[サイト](https://atlas.mitre.org/)
+
+#### それぞれのアーキテクチャの概要
+「シンプルなLLMチャットボット」「RAGを用いたLLMアプリケーション」「自律的に行動するAIエージェント」についてそれぞれの概要をまとめた。以降、略称としてそれぞれを「チャットボット」「RAGLLM」「AIエージェント」と呼ぶ。
+| アーキテクチャ | 概要 | 使用例 |
+| ---- | ---- | ---- |
+| チャットボット | あらかじめ学習した知識だけでユーザと会話する。外部の情報を見たり、アプリの操作は行わない。 | AI翻訳 |
+| RAGLLM | LLMに検索エンジンや資料を与えたもの。ユーザの質問に関連する情報を外部から取得してそれを基に回答する。 | 大学内や企業内のQ&Aシステム |
+| AIエージェント| 考えるだけではなく、行動する権限を持っている形式。目標を与えると手順を自分で決めて、外部ツールを操作する。| コーディングエージェント |
+
+チャットボットからRAGLLM、AIエージェントと進化するにつれて、知識を提供する立場から活用したり、そのまま実行に移すようになる。
+
+#### それぞれのアーキテクチャの脅威
+1. チャットボット<br />
+このアーキテクチャでは、ユーザが直接AIにプロンプトを入力することが脅威となる。直接プロンプトインジェクション(DPI)と呼び、ユーザがチャットボットに対して「これまでの指示を無視してください」などと命令をすることで本来の設定を無視して回答するようになる。<br />
+> OWASP: [LLM01: Prompt Injection](https://genai.owasp.org/llmrisk2023-24/llm01-24-prompt-injection/)
+> MITRE ATLAS: [AML.T0051: Prompt Injection]()
+
+2. RAGLLM<br />
+3. AIエージェント<br />
+
+
+
+### (2)
+### (3)
+### (4)
 # Q.6 ()
