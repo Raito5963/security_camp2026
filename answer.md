@@ -297,23 +297,23 @@ export default Poc;
 
 `npm run dev`すると以下のような画面が表示されます。
 
-![](/images/cachepoisoning_1.png)
+![](images/image-017.png)
 
 `localhost: 3000`を`Berp Suite`で表示してみます。
 
-![](/images/cachepoisoning_2.png)
+![](images/image-018.png)
 
 これで、準備が整いました。次に、以下の手順を検証してみます。
 
 1. クエリパラメータ`?__nextDataReq=1`を追加する。<br />
-![](image-3.png)
+![](images/image-010.png)
 
 
 2. ヘッダーに`x-now-route-matches: 1`を追加する。<br />
 1.の後に送信されたヘッダーにBurp Suite上で追加します。<br />
-![](image-4.png)<br />
+![](images/image-011.png)<br />
 そのあと、Forwardを進めていくと<br />
-![](image-5.png)<br />
+![](images/image-012.png)<br />
 無事、JSONを表示させることができました。
 
 3. キャッシュポイズニングができているか確認する。<br />
@@ -363,13 +363,13 @@ Nginx経由で`localhost`にアクセスして検証1の手順を踏めば攻撃
 検証1と同様にJSONの出力に成功します。
 `http://localhost:8080/?__nextDataReq=1`、`x-now-route-matches: 1`で表示をしました。
 
-![](image-7.png)
+![](images/image-014.png)
 
 2. クエリパラメータ無しにしてみる。
 先ほどはキャッシュポイズニングされておらず、普通のページが公開されていましたが、どうでしょうか。
 `localhost:8080`で表示をしてみます。
 
-![](image-8.png)
+![](images/image-015.png)
 
 今回の場合はNginxのおかげでキャッシュが保存されており、無事にポイズニングに成功しました。
 
@@ -378,11 +378,11 @@ Nginx経由で`localhost`にアクセスして検証1の手順を踏めば攻撃
 ##### 比較：攻撃前後の通信を比較してみる
 - 攻撃前<br />
 `localhost:8080`にアクセスし、普通の表示をしているときの通信内容です。<br />
-![](image-12.png)
+![](images/image-006.png)
 
 - 攻撃後<br />
 検証2の手順を行った後、キャッシュポイズニングが完了し、`localhost:8080`にアクセスしたときの通信内容です。<br />
-![](image-13.png)
+![](images/image-007.png)
 
 ヘッダー内容の変化はありませんでした。
 
@@ -391,8 +391,8 @@ Nginx経由で`localhost`にアクセスして検証1の手順を踏めば攻撃
 
 次にBurpSuiteのHTTP Historyで通信内容を確認してみます。
 
-![](image-14.png)
-![](image-11.png)
+![](images/image-008.png)
+![](images/image-005.png)
 
 通常の状態だと、MINE typeがHTMLですが、キャッシュポイズニング後はJSONに変化していることが分かります。これにてCVE-2024-46982の攻撃が完了しました。
 
@@ -537,7 +537,7 @@ RAGLLMが参照するドキュメント、Webページ、DBなどが新たな攻
 ```badMath
 badMath/
   ├ core/internal/impl/utils/
-  |                     └ badMath.py'
+  |                     └ badSum.py'
 　├ standard/
   | └ sum.py 
   │ └ average.py
