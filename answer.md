@@ -694,7 +694,7 @@ Next.jsのようなモダンフレームワークはSSG,SSRなどの複雑な仕
 検証の時にキャッシュ層がなく、キャッシュが保存されない状態がありましたが、解決策を調べる中でNgnixとDockerを使用するとキャッシュサーバを立てられることを学びました。この検証で初めてNgnixとDockerを使用しました。初めて使うツールで環境構築などは一つ一つ調べながらでしたが、コンテナ化やサーバ立てなど、普段やらないインフラ・バックエンド面のコーディングを経験できたことがとても面白かったです。
 
 #### 考察
-##### 1. Vercelホスティングであればこの攻撃が成立しないらしい
+##### Vercelホスティングであればこの攻撃が成立しないらしい
 今回はローカルでの検証なのでデプロイしてないため実際の挙動は不明だが、調べた内容によると、`x-now-route-matches: 1`などのヘッダーはVercelのインフラ内部のコンポーネント間通信でのみ使用されるヘッダーとして扱われるため、外部からこれらのヘッダーが送られてきた場合、Vercelのエッジサーバはこれらを無視するか上書きする。そうすれば、`x-now-route-matches: 1`によって`isSSG = true`になるという誤判定を防ぐことができる。
 
 > [CVE-2025-32421](https://vercel.com/changelog/cve-2025-32421)
@@ -702,7 +702,7 @@ Next.jsのようなモダンフレームワークはSSG,SSRなどの複雑な仕
 また、Vercelのデプロイ環境の標準設定では、HTMLやJSONなどデータの種類を識別する要素がキャッシュキーに含まれるように最適化されている。
 
 ### 出典
-> サイトの翻訳をGeminiでやったことをかく。
+> 出典内のサイトにおいて、翻訳にGeminiを使用しました。
 - [Rachid Allam - zhero; Next.js, cache, and chains: the stale elixir](https://zhero-web-sec.github.io/research-and-things/nextjs-cache-and-chains-the-stale-elixir)
 - [れおりん(@reoring) - Qiita; Next.jsのキャッシュ機構と CVE-2024-46982 技術詳細レポート](https://qiita.com/reoring/items/7b5a48022d5918a16ac5)
 - [CVE-2024-46982
