@@ -1425,6 +1425,39 @@ AIエージェントそのものが抱える「自律性」と「安全性」の
 
 # Q.6 (ソフトウェアサプライチェーンと CI/CD パイプラインを狙う脅威の分析)
 ## (1) Shai-Huludの調査
+### 概要
+Shai-Huludやそれに類する攻撃の事例をまとめるにあたって、それらの概要をまとめました。
+
+#### Shai-Huludについて
+`Node.js`のパッケージ管理システム`npm (Node Package Module)`を標的にした自己複製ワーム型マルウェア。
+
+発見は2025年の9月15日。正解中の企業や開発者の広範囲の影響を及ぼした。攻撃の起点は開発者に届いたフィッシングメールであった。
+
+これまでのnpm攻撃とは異なるのはワームが利用され、感染が拡大した。約200個のパッケージに感染が確認されていて、人気の高い複数のリポジトリもその中に含まれてた。
+
+このワームが実行されると、認証情報を窃取し外部に持ち出し、自身を追加するための追加のnpmパッケージを探す。
+
+#### Shai-Huludの亜種について
+2025年11月には進化版の`Shai-Hulud 2.0`が確認されており、
+2026年4月29日には`Mini Shai-Hulud`が確認されている。
+
+
+### Shai-Huludや類する攻撃の事例
+
+### 出典
+https://www.sysdig.com/jp/blog/shai-hulud-the-novel-self-replicating-worm-infecting-hundreds-of-npm-packages
+
+https://security-academy.jp/blog/security/post-1570/
+
+https://www.trendmicro.com/ja_jp/research/25/i/npm-supply-chain-attack.html
+
+https://zenn.dev/ashe/articles/c9a023a0fe3c0e
+
+2.0
+https://www.trendmicro.com/ja_jp/research/25/k/shai-hulud-2-0-targets-cloud-and-developer-systems.html
+
+mini
+https://blog.flatt.tech/entry/mini_shai_hulud
 
 ## (2) CI/CDパイプラインに対する攻撃の技術的・運用的な対策
 
