@@ -1,5 +1,5 @@
 # 初めに
-英語の翻訳や用語のリストアップ、意味の確認に一部Geminiを使用しています。確認後は自分で検索を行い、信頼できるソースを出典として明示しています。
+英語の翻訳や用語のリストアップ、意味の確認、文章添削、フィードバックにGeminiを使用しています。確認後は自分で検索を行い、信頼できるソースを出典として明示しています。
 
 # Q.1 (応募のモチベーションについて)
 ## B4 セキュアコーディングとAI共生（バグバウンティ、脆弱性管理）
@@ -1423,4 +1423,11 @@ AIエージェントそのものが抱える「自律性」と「安全性」の
 - [LLM prompt injection prevention cheet sheat](https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html)
 - [Mitigate jailbreaks and prompt injections](https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks)
 
-# Q.6 ()
+# Q.6 (ソフトウェアサプライチェーンと CI/CD パイプラインを狙う脅威の分析)
+## (1) Shai-Huludの調査
+
+## (2) CI/CDパイプラインに対する攻撃の技術的・運用的な対策
+
+## (3) CIパイプラインの構築と考察
+
+## (4) 外部委託や統合におけるリスクの増大と管理
