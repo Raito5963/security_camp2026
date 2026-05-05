@@ -1438,11 +1438,13 @@ Shai-Huludやそれに類する攻撃の事例をまとめるにあたって、�
 このワームが実行されると、認証情報を窃取し外部に持ち出し、自身を追加するための追加のnpmパッケージを探す。
 
 #### Shai-Huludの亜種について
-2025年11月には進化版の`Shai-Hulud 2.0`が確認されており、
-2026年4月29日には`Mini Shai-Hulud`が確認されている。
+2025年11月には進化版の`Shai-Hulud 2.0`が確認されており、さらに多くのnpmリポジトリが侵害された。AWSやGCP,AzureからAPIキー、トークン、パスワードを含む認証情報を窃取し、npmトークンやGithubの認証情報も標的にしていることが判明している。
 
+2026年4月29日には`Mini Shai-Hulud`が確認されている。ここでも`npm`だけでなく`PyPl`を含む複数の主要パッケージが侵害されている。
 
 ### Shai-Huludや類する攻撃の事例
+`Shai-Hulud`の攻撃手法を軸に解説をしていく。
+
 
 ### 出典
 https://www.sysdig.com/jp/blog/shai-hulud-the-novel-self-replicating-worm-infecting-hundreds-of-npm-packages
