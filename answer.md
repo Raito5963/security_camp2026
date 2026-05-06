@@ -2007,6 +2007,73 @@ CI/CDパイプラインのログをセキュアなストレージへ移し、攻
 - [npmサプライチェーン攻撃Shai-Huludの起点はフィッシング～TOTPの代わりにFIDOで対策を～【セキュア開発技術Blog】](https://www.proactivedefense.jp/blog/blog-training/post-7108?__CAMCID=KkHKvcKWHm-914&__CAMI=3.2.0.1.HIqGgihidIGCG.MVR6pkujdIt0CKaa-48&__CAMSID=MVR6pkujdIt0CKaa-48&__CAMVID=HIqGgihidIGCG&_c_d=1&_ct=1778030932276#index_id1)
 
 ## (3) CIパイプラインの構築と考察
+今回は試しに、`Q.4`で構築した脆弱性のあるNext.jsにCIパイプラインを搭載してみる。
+
+まずはGitHub Actions上で、脆弱性スキャン(Trivy)とSBOM生成(Syft)をpushごとに行う構成を組んでみる。
+
+まずは、トリアージを行うためにすべての脆弱性を出力してみる。
+
+```yaml
+name: Scan and SBOM for Security Camp
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 1. コンテナイメージのビルド
+      - name: Test
+        run: docker build -t my-app:latest .
+
+      # 2. SBOMの生成 (Syft)
+      - name: Generate SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          format: cyclonedx-json
+          output-file: sbom.cdx.json
+
+      # 3. 脆弱性スキャン (Trivy)
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'my-app:latest'
+          format: 'table'
+          # 脆弱性を見つけても続ける
+          exit-code: '0'
+          # 一旦、すべての深刻度を出力する 
+          severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+```
+
+この`yaml`ファイルを、`Q.4`で使用したリポジトリ内に`/.github/workflow`として配置。
+
+![あああ](image-17.png)
+
+変更をcommit、pushしてみる。
+
+すぐに`Actions`で実行し始めた。
+
+![あああ](image-18.png)
+![alt text](image-19.png)
+
+3分ほどたつと、無事に実行を終了した。
+
+![あ](image-20.png)
+
+Annotationが出ているため確認してみる。
+
+![alt text](image-21.png)
+
+> Node.js 20のアクションは非推奨となりました。以下のGitHubアクションはNode.js 20で実行されており、期待通りに動作しない可能性があります：actions/checkout@v4。<br />
+> アクションは、2026年6月2日より、デフォルトでNode.js 24を使用して実行されるようになります。また、Node.js 20は2026年9月16日にランナー（実行環境）から削除されます。<br />
+> Node.js 24をサポートする新しいバージョンのアクションが利用可能かどうかを確認してください。<br />
+> 今すぐNode.js 24での実行に切り替えるには、ランナーまたはワークフローファイルに環境変数 FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true を設定してください。Node.js 24がデフォルトになった後、一時的に古いバージョンでの実行を許可したい場合は、ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true を設定することで回避可能です。<br/>
+>詳細については、以下の公式ブログをご覧ください：https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+
+成果物の`json`を確認してみよう。
 
 ## (4) 外部委託や統合におけるリスクの増大と管理
 
