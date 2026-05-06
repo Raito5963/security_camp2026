@@ -2073,7 +2073,27 @@ Annotationが出ているため確認してみる。
 > 今すぐNode.js 24での実行に切り替えるには、ランナーまたはワークフローファイルに環境変数 FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true を設定してください。Node.js 24がデフォルトになった後、一時的に古いバージョンでの実行を許可したい場合は、ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true を設定することで回避可能です。<br/>
 >詳細については、以下の公式ブログをご覧ください：https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
 
-成果物の`json`を確認してみよう。
+`Node.js 20`を使用していることに対する非推奨のアラートだった。
+
+成果物の`json`形式のSBOMを確認してみよう。
+
+![alt text](image-22.png)
+![alt text](image-23.png)
+![alt text](image-24.png)
+
+このリポジトリ内で利用しているライブラリの名前やバージョン、ライセンス情報が記載されていることが分かる。
+
+では、脆弱性スキャンの結果を確認してみよう。GitHub Actionsのビルドログを確認することで確認できる。
+
+![alt text](image-25.png)
+
+`Run Trivy vulnerability scanner`という項目を開いてみると、ReportSummaryという項目があった。
+
+![alt text](image-26.png)
+
+この表では各ターゲットごとに脆弱性の個数をまとめているようだ。
+
+次の表を確認してみると、
 
 ## (4) 外部委託や統合におけるリスクの増大と管理
 
