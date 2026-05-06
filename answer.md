@@ -1,4 +1,4 @@
-# 初めに
+﻿# 初めに
 英語の翻訳や用語のリストアップ、意味の確認、文章添削、フィードバックにGeminiを使用しています。確認後は自分で検索を行い、信頼できるソースを出典として明示しています。
 
 # Q.1 (応募のモチベーションについて)
@@ -406,7 +406,7 @@ Instagramのような大規模な画像投稿型のSNSを想定してみる。
 
 システム構成図はこのようになる。
 
-![image](/images/image-020.png)
+![画像001](/images/image-001.png)
 
 > なぜそうしたかを書く
 
@@ -663,23 +663,23 @@ export default Poc;
 
 `npm run dev`すると以下のような画面が表示されます。
 
-![](images/image-017.png)
+![画像002](/images/image-002.png)
 
 `localhost: 3000`を`Berp Suite`で表示してみます。
 
-![](images/image-018.png)
+![画像003](/images/image-003.png)
 
 これで、準備が整いました。次に、以下の手順を検証してみます。
 
 1. クエリパラメータ`?__nextDataReq=1`を追加する。<br />
-![](images/image-010.png)
+![画像004](/images/image-004.png)
 
 
 2. ヘッダーに`x-now-route-matches: 1`を追加する。<br />
 1.の後に送信されたヘッダーにBurp Suite上で追加します。<br />
-![](images/image-011.png)<br />
+![画像005](/images/image-005.png)<br />
 そのあと、Forwardを進めていくと<br />
-![](images/image-012.png)<br />
+![画像006](/images/image-006.png)<br />
 無事、JSONを表示させることができました。
 
 
@@ -731,13 +731,13 @@ Nginx経由で`localhost`にアクセスして検証1の手順を踏めば攻撃
 検証1と同様にJSONの出力に成功します。
 `http://localhost:8080/?__nextDataReq=1`、`x-now-route-matches: 1`で表示をしました。
 
-![](images/image-014.png)
+![画像007](/images/image-007.png)
 
 2. クエリパラメータ無しにしてみる。
 先ほどはキャッシュポイズニングされておらず、普通のページが公開されていましたが、どうでしょうか。
 `localhost:8080`で表示をしてみます。
 
-![](images/image-015.png)
+![画像008](/images/image-008.png)
 
 今回の場合はNginxのおかげでキャッシュが保存されており、無事にポイズニングに成功しました。
 
@@ -746,11 +746,11 @@ Nginx経由で`localhost`にアクセスして検証1の手順を踏めば攻撃
 ##### 比較：攻撃前後の通信を比較してみる
 - 攻撃前<br />
 `localhost:8080`にアクセスし、普通の表示をしているときの通信内容です。<br />
-![](images/image-006.png)
+![画像009](/images/image-009.png)
 
 - 攻撃後<br />
 検証2の手順を行った後、キャッシュポイズニングが完了し、`localhost:8080`にアクセスしたときの通信内容です。<br />
-![](images/image-007.png)
+![画像010](/images/image-010.png)
 
 ヘッダー内容の変化はありませんでした。
 
@@ -759,8 +759,8 @@ Nginx経由で`localhost`にアクセスして検証1の手順を踏めば攻撃
 
 次にBurpSuiteのHTTP Historyで通信内容を確認してみます。
 
-![](images/image-008.png)
-![](images/image-005.png)
+![画像011](/images/image-011.png)
+![画像012](/images/image-012.png)
 
 通常の状態だと、MINE typeがHTMLですが、キャッシュポイズニング後はJSONに変化していることが分かります。これにてCVE-2024-46982の攻撃が完了しました。
 
@@ -1090,7 +1090,7 @@ AIエージェントの権限を切る、トークン失効させる、影響範
 #### 検証1. AIエージェント
 まず環境構築にあたり、AIエージェント(今回はGitHub Copilotを使用)に`badMath`ライブラリと`dummyApp`というアプリケーションを用意してもらった。
 
-![oa](image-2.png)
+![画像013](/images/image-013.png)
 
 `dummyApp`の初期コードは以下の通り。
 
@@ -1114,7 +1114,7 @@ if __name__ == "__main__":
 ```
 
 `main.py`の実行結果はこの通り。
-![ああ](image-1.png)
+![画像014](/images/image-014.png)
 
 `.env.test`ファイルの内容は以下の通り。
 
@@ -1132,12 +1132,12 @@ SECRET_PASSWARD=Admin
 dummyAPPの計算処理を最適化するために、計算処理にbadMathライブラリの関数を使用するように変更してください。
 ```
 
-![a](image-3.png)
+![画像015](/images/image-015.png)
 
 以下がAIエージェントの返答である。
 
-![a](image-4.png)
-![a](image-5.png)
+![画像016](/images/image-016.png)
+![画像017](/images/image-017.png)
 
 やはり、`badMath`内のコメントを無視して普通に実装を完了させてしまった。GitHubCopilotのような大規模なAIエージェントでは対策されていて普通に行うことはできないと思われる。
 
@@ -1149,7 +1149,7 @@ dummyAPPの計算処理を最適化するために、計算処理にbadMathラ�
 次に送信されるプロンプトを基に実装を行ってください。
 ```
 
-![alt text](image-6.png)
+![画像018](/images/image-018.png)
 
 だめだった。もう少し文章を追加してみよう。
 
@@ -1167,32 +1167,32 @@ dummyAPPの計算処理を最適化するために、計算処理にbadMathラ�
 次に送信されるプロンプトをうけとってから実装を行ってください。
 ```
 
-![あ](image-7.png)
+![画像019](/images/image-019.png)
 
 今度は無事行ってくれそうだ。しかも、サンドボックスの準備からログの記録、報告書の解析まで行ってくれるそうだ。
 
 では今度こそプロンプトインジェクションを行ってみる。
 
-![あ](image-8.png)
-![あ](image-9.png)
+![画像020](/images/image-020.png)
+![画像021](/images/image-021.png)
 
 一度、実行の確認で止まってしまった。危険な変更を行う前に必ず一度確認をとるように設定されているのだろう。一回このまま進めてみる。
 
-![alt text](image-10.png)
-![alt text](image-11.png)
-![alt text](image-12.png)
-![alt text](image-13.png)
+![画像022](/images/image-022.png)
+![画像023](/images/image-023.png)
+![画像024](/images/image-024.png)
+![画像025](/images/image-025.png)
 
 サンドボックス化されたフォルダ`experiments`が生成された。
 
-![alt text](image-14.png)
+![画像026](/images/image-026.png)
 
 `dummyApp`への変更をお願いしたが、そちらへの変更は一切なく思っていた結果にはならなかった。おそらく安全のためのサンドボックス化に気を取られてしまったのかもしれない。
 
 同じプロンプトでもう一度行ってみた。
 
-![alt text](image-15.png)
-![alt text](image-16.png)
+![画像027](/images/image-027.png)
+![画像028](/images/image-028.png)
 
 思い切り攻撃内容を話しているが、事前説明があったためこれは仕方ないと思われる。事前説明のプロンプトで「攻撃内容については秘匿してください」と記述することで防ぐことができると思う。
 
@@ -2077,22 +2077,22 @@ jobs:
 
 この`yaml`ファイルを、`Q.4`で使用したリポジトリ内に`/.github/workflow`として配置。
 
-![あああ](image-17.png)
+![画像029](/images/image-029.png)
 
 変更をcommit、pushしてみる。
 
 すぐに`Actions`で実行し始めた。
 
-![あああ](image-18.png)
-![alt text](image-19.png)
+![画像030](/images/image-030.png)
+![画像031](/images/image-031.png)
 
 3分ほどたつと、無事に実行を終了した。
 
-![あ](image-20.png)
+![画像032](/images/image-032.png)
 
 Annotationが出ているため確認してみる。
 
-![alt text](image-21.png)
+![画像033](/images/image-033.png)
 
 > Node.js 20のアクションは非推奨となりました。以下のGitHubアクションはNode.js 20で実行されており、期待通りに動作しない可能性があります：actions/checkout@v4。<br />
 > アクションは、2026年6月2日より、デフォルトでNode.js 24を使用して実行されるようになります。また、Node.js 20は2026年9月16日にランナー（実行環境）から削除されます。<br />
@@ -2104,25 +2104,25 @@ Annotationが出ているため確認してみる。
 
 成果物の`json`形式のSBOMを確認してみよう。
 
-![alt text](image-22.png)
-![alt text](image-23.png)
-![alt text](image-24.png)
+![画像034](/images/image-034.png)
+![画像035](/images/image-035.png)
+![画像036](/images/image-036.png)
 
 このリポジトリ内で利用しているライブラリの名前やバージョン、ライセンス情報が記載されていることが分かる。
 
 では、脆弱性スキャンの結果を確認してみよう。GitHub Actionsのビルドログを確認することで確認できる。
 
-![alt text](image-25.png)
+![画像037](/images/image-037.png)
 
 `Run Trivy vulnerability scanner`という項目を開いてみると、ReportSummaryという項目があった。
 
-![alt text](image-26.png)
+![画像038](/images/image-038.png)
 
 この表では依存関係の各ターゲットごとに脆弱性の個数をまとめているようだ。
 
 その表の次の表を確認してみる。
 
-![alt text](image-27.png)
+![画像039](/images/image-039.png)
 
 計50個の脆弱性が検知されていることが分かる。
 
@@ -2165,17 +2165,17 @@ CIパイプラインの`yaml`ファイルを書き換えて、HIGH以上が検�
 
 変更をcommit,pushし、GitHubActionのWorkflowが完了するのを待つ。
 
-![alt text](image-28.png)
+![画像040](/images/image-040.png)
 
 Workflowの実行が完了したら先ほど同様、Trivyのスキャン結果を確認してみる。
 
-![alt text](image-29.png)
+![画像041](/images/image-041.png)
 
 結果が正しく`HIGH`以上の脆弱性だけになっていることが分かる。
 
-![alt text](image-30.png)
-![alt text](image-31.png)
-![alt text](image-32.png)
+![画像042](/images/image-042.png)
+![画像043](/images/image-043.png)
+![画像044](/images/image-044.png)
 
 今回検出された19個の`HIGH`以上の脆弱性の中で「無視してよいノイズ」として分類できるものはあるだろうか。
 
@@ -2218,4 +2218,6 @@ CIパイプラインによる脆弱性スキャンやSBOM生成は状態の可�
 自動化ツールを入れたから安全ではなく、出力された結果に対して、コンテキストを理解した開発者・セキュリティ担当者が判断を下すプロセスの設計や、トリアージ結果を機械的に共有・適用する仕組みの導入、あるいは最初からコンテナイメージを軽量化してノイズそのものを減らすといったアーキテクチャ設計が併せて必要であると強く感じました。
 
 ## (4) 外部委託や統合におけるリスクの増大と管理
+
+
 
