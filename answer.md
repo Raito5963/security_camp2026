@@ -1,10 +1,5 @@
 ﻿# 初めに
 英語の翻訳や用語のリストアップ、意味の確認、文章添削、フィードバックにGeminiを使用しています。確認後は自分で検索を行い、信頼できるソースを出典として明示しています。
-> 使用したプロンプトを入れる
-> 問題を入れずに実行してみる
-> 思いを強くとか意欲を伝えたいで添削してもらう
-
-> 文章の正しさ、読みやすさ(最終的)
 
 # Q.1
 > motivation.mdに書いて後でくっつける
@@ -170,6 +165,7 @@ StartupWeekend 静岡 8thで開発したニッチな趣味の人とつながれ�
 そこで、今回のセキュリティキャンプを機に自分もバックエンドについて学び、フルスタックエンジニアを目指そうと考えました。
 
 ### 調査
+> 表形式をできるだけやめて実際にやってみる
 バックエンドに関する経験はSupabase程度しかなく、知識に関してもツールやスタックの名前を知っている程度で、それぞれの役割、メリットなどは全く知りませんでした。
 
 そのため、今後バックエンドを勉強していくための基礎知識として、実務などでよく使われるバックエンドのスタックや用語を調査しました。
@@ -215,6 +211,83 @@ DBを利用してデータを取り扱う。何をどう保存するか定義す
 また、Goはメモリの消費量が少なく、Dockerコンテナも軽量に作れるのでCloudFlareで経験したリソース制限を踏まえて、インフラコストを抑えながら安定稼働させるのに適していると感じました。
 
 ツールのエコシステムとしてもNext.jsのバンドラでGoが使用されていた背景もある（現在はRustへの移行が進んでいますが）ため、私が普段使う環境との親和性も高いと思います。
+
+試しに、Goを使用してQiitaのトレンド記事のSSRから、それぞれの記事のタイトルと本文をスクレイピングするコードを作成してみました。
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+	"github.com/gocolly/colly"
+	"net/url"
+)
+
+// qiita記事のスクレイパー
+func article(link string) {
+	//　インスタンス作成
+	c := colly.NewCollector()
+	url := link
+	c.OnError(func(_ *colly.Response, err error) {
+		log.Println("Something went wrong:", err)
+	})
+	// 取得するタグを指定できる
+	/*
+		title:style-wo2a1i
+		article:mdContent-inner
+	*/
+	// article
+	c.OnHTML(".mdContent-inner", func(e *colly.HTMLElement) {
+		fmt.Println(e.Text)
+	})
+	c.Visit(url)
+}
+
+// URLからクエリパラメータを削除する関数
+func cleanURL(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return rawURL // エラー時は元のURLを返す
+	}
+	u.RawQuery = "" // クエリ部分を空にする
+	u.Fragment = "" // ついでに # 以降（フラグメント）も消す
+	return u.String()
+}
+
+func rss(){
+	c := colly.NewCollector()
+	// Atomフィード内の <entry> タグをターゲットにする
+	c.OnXML("//entry", func(e *colly.XMLElement) {
+		// <title>タグのテキストを取得
+		title := e.ChildText("title")
+		// <link>タグの href 属性を取得
+		// linkタグは複数ある場合があるが、通常は alternate が記事URL
+		rawlink := e.ChildAttr("link[@rel='alternate']", "href")
+		link := cleanURL(rawlink)
+		fmt.Printf("タイトル: %s\n", title)
+		fmt.Printf("リンク  : %s\n", link)
+		article(link)
+		fmt.Println("--------------------------------------------------")
+	})
+	// エラーハンドリング
+	c.OnError(func(r *colly.Response, err error) {
+		log.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	})
+	// QiitaのRSSフィードURLを指定して実行
+	c.Visit("https://qiita.com/popular-items/feed")
+}
+
+func main(){
+	rss()
+}
+```
+
+![画像000](/images/image-054.png)
+
+実際にGoを使用してみて、`gocolly`というスクレイピングを行うOSSは使用したものの、非常に書きやすいと感じました。
+
+Tutorialも序盤のほうだけ目を通してみたが、C言語に似ている部分もあったため、自分にとって非常に学習しやすい言語だなと感じました。現在はあまりGoである恩恵を受けられてませんが、Goなら`goroutine`などで簡単に並列処理でスクレイピングを行えるようになると思いました。
 
 #### DB
 データを保存し、効率よく取り出す。
