@@ -2435,3 +2435,5 @@ CIパイプラインによる脆弱性スキャンやSBOM生成は状態の可�
 - [サプライチェーンsecurity教育資料](https://www.ipa.go.jp/jinzai/ics/core_human_resource/final_project/2022/ngi93u0000002jnu-att/000099269.pdf)
 - [M&Aで見落とすサプライチェーン攻撃リスク｜DD・子会社統合の要点を解説](https://guardian.jpn.com/security/cloud-supply/supply-chain/column/executive/ma/)
 - [外部委託等における情報セキュリティ上のサプライチェーン・リスク対応について](https://www.jica.go.jp/about/announce/information/common/2024/__icsFiles/afieldfile/2025/02/12/1562763_02.pdf)
+
+
