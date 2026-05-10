@@ -1,8 +1,42 @@
 ﻿# 初めに
-英語の翻訳や用語のリストアップ、意味の確認、文章添削、フィードバックにGeminiを使用しています。確認後は自分で検索を行い、信頼できるソースを出典として明示しています。
+本応募用紙の作成にあたり、思考の整理、英語文献の翻訳、専門用語の概要把握、そして文章の客観的なフィードバックを目的として Gemini を活用しています。
+ただし、AIの出力をそのまま用いることはせず、提示された技術要素は必ず自身のローカル環境で手を動かして検証(Q.3, Q.4, Q.5等)を行い、公式ドキュメント等の信頼できる一次情報を出典として明示するポリシーで執筆しています。
 
-# Q.1
-> motivation.mdに書いて後でくっつける
+自分の理解を深めるツールとして、主に以下のようなプロンプトを用いてAIを使用しました。
+
+> 以下の文章は、採点者にとって熱意が伝わる文章になっているか評価してください。熱意が伝わりにくいと感じた場合は、いくつかアドバイスをください。ただし、文章の修正例は出力しないようにしてください。(記述した文章を提示) 
+
+> 下記のようなエラーが発生しました。エラー内容をまとめて、原因について詳しく教えてください。修正例は提示しなくていいです。(エラー内容を提示)
+
+> これらの対策は実際に効果があるものかどうか考えてください。そして、この対策の攻撃者の視点についてヒントを提示してください。(対策を提示)
+
+# Q.1 (応募のモチベーションについて)
+## B4 セキュアコーディングとAI共生（バグバウンティ、脆弱性管理）
+私が本講座を強く志望する理由は、生成AIを活用した急速な開発の裏に潜む脆弱性のリスクを痛感し、AIと共生しながらセキュアなコードを生み出す技術と責任を学びたいと考えているためです。
+
+私はフロントエンド開発を独学で始めた当初からAIを教師、相棒として活用し、学習をしながら開発を行い、苦手な部分やバックエンドなどの未履修の部分はAIにサポートしてもらってきました。セキュリティに関心を持ちCTFや脆弱性情報に触れるようになってから過去の自分の成果物を振り返ると、APIキーのハードコードや入力値の不適切な処理など、AIが生成した危険なコードを鵜呑みにして実装していた事実に気づき、大きな危機感を覚えました。
+
+この経験からシステム保護の重要性に惹かれ、決められた正解を探すCTFのパズル的な面白さ以上に、実際のシステムから未知の欠陥を見つけ出すバグバウンティの世界に強い魅力を感じています。特に、技術的な脆弱性だけでなく、開発者の心理やAIの出力パターンの隙を突くような攻撃手法には大きな関心があります。一方で、[Claude Mythos](https://forbesjapan.com/articles/detail/95537?read_more=1)のように自律型AIエージェントが未知の脆弱性を発見する事例は、AIの技術革新はセキュリティのあり方を根本から変えようとしています。
+
+組織開発においては、外部APIを経由しないローカルモデルの運用や、プロンプトをテンプレート化して自動的にセキュリティレビューを組み込むような、属人性を排除した安全なAI運用の仕組みが不可欠だと考えています。
+
+便利なAIツールにただ依存するのではなく、その出力結果に対して開発者自身が確かな知識をもって検証し、責任を担保できる体制を構築することが今後の必須要件だと思います。
+
+本講座を通じて、飯沼先生のセキュリティエンジニアやシステム開発、インフラ構築、バグハントなど多種多様な現場経験や視点に基づくプロダクトセキュリティの知見を吸収し、AIの力を最大限に引き出しつつシステムの堅牢性を守り抜くセキュアな開発を牽引できるエンジニアへと成長したいです。
+
+## B6 ソフトウェアサプライチェーンの構造的リスクとコンテナ環境の保護
+私が本講座を志望する最大の理由は、現代のソフトウェア開発において不可欠となっているOSSやCI/CDパイプラインに潜む構造的な脅威を深く理解し、それらを防御する実践的な技術を習得したいという強い思いがあるからです。
+
+私はこれまで様々な開発で多数の外部ライブラリを活用し、ホスティングサービスを通じた自動デプロイを行ってきました。しかし、サプライチェーン攻撃の事例や、[バックドアが仕込まれたパッケージをAIエージェントが無意識に組み込んでしまうリスク](https://qiita.com/NF0000/items/66510f959b1c22f011a7)を知り、これまで依存関係の安全性を全く検証せずにプロダクトを公開していた自身の開発体制に対して非常に強い危機感を抱きました。
+
+開発の高速化と利便性をもたらすCI/CDパイプラインは、一度侵害されれば大規模な被害を生み出す致命的な弱点にもなる可能性があります。承認プロセスの欠如による不正なコードの混入、依存関係を悪用した汚染パッケージの取り込み、パイプライン内での権限の不適切な管理による環境変数の漏洩など、攻撃経路はたくさんあります。
+
+私が過去に関わったチーム開発では、友人が構築したパイプラインの恩恵を受けていただけで、その背後にあるセキュリティレイヤーの重要性を全く理解していませんでした。チームでプロダクトを安全に運用し続けるためには、単に自動化の仕組みを作るだけでなく、シークレット情報のスキャンや厳格なアクセス制御、コンテナイメージへの署名検証などを組み込んだ堅牢なプロセスの設計が重要であると思います。
+
+今後は手元のコードの安全性だけでなく、ソフトウェアが利用者の元へ届くまでの経路全体を保護する包括的な視点が必要です。
+
+本講座を通じて、コンテナセキュリティの最前線で活躍される水元先生からK8sなどのコンテナ技術やサプライチェーン保護の高度な知見を直接学びたいと考えています。ただ知識を得るだけでなく、実際のアーキテクチャのどこを突けばシステムが崩壊するのか、そしてそれをどう防御するのかを手を動かして徹底的に検証し、開発速度を犠牲にすることなくデプロイ全体を守り抜くインフラ基盤を自ら設計・構築できるエンジニアになりたいです。
+
 
 # Q.2 (これまでの経験について)
 ## (1) Web アプリケーションの設計・開発経験
@@ -164,225 +198,427 @@ StartupWeekend 静岡 8thで開発したニッチな趣味の人とつながれ�
 
 そこで、今回のセキュリティキャンプを機に自分もバックエンドについて学び、フルスタックエンジニアを目指そうと考えました。
 
-### 調査
-> 表形式をできるだけやめて実際にやってみる
-バックエンドに関する経験はSupabase程度しかなく、知識に関してもツールやスタックの名前を知っている程度で、それぞれの役割、メリットなどは全く知りませんでした。
+### 体験
+バックエンドで使用される言語やツールなどをいろいろ調べましたが、調べるだけではバックエンドを理解するというのは到底無理だと思いました。そこで、調べたものを使って実際にモノを作ってみようと思います。
 
-そのため、今後バックエンドを勉強していくための基礎知識として、実務などでよく使われるバックエンドのスタックや用語を調査しました。
+今回は、`Next.js`、`Gin`、`PostgreSQL`、を使用して、シンプルなToDoリストを作ってみようと思います。いままでは`Supabase`にAPI通信を行いデータを取得、データの処理などすべて`Next.js`で行っていましたが今回はフロントエンドとバックエンドを完全に分離、バックエンドからしかDBに接続できないようにすることで安全性と効率性を高めてみようと思います。
 
-#### そもそもバックエンドとは
-バックエンドって自分のイメージ的に結構広い気がしています。フロントエンドはユーザの目に見える部分、バックエンドは目に見えない部分という認識だからです。
 
-アプリの処理を行ったり、ネットワーク通信のことをやったり、サーバを管理したり、セキュリティをしたり...いろんなことがすべてバックエンドとしてくくられている気がしたので先にそこを明確にしておきます。
+#### 1. 簡単な準備
+ToDoリストを作るにあたって、初めて`SQL`を使用するので基礎的な文法を勉強しました。(`SELECT`,`CREATE`,副問合せなど)
 
-##### ビジネスロジック
-アプリケーションで必要になる機能や処理、フロントエンドとのやり取りのためのAPI開発、処理の負荷を分散させてメインの応答速度を維持するための非同期処理など。
+今回のToDoでは、タスク名、削除フラグ(`True`,`False`)のデータを扱います。
 
-##### データ管理
-DBを利用してデータを取り扱う。何をどう保存するか定義するDB設計、大量のデータから高速な検索をするためのクエリ最適化、トランザクション管理など。
+今までこういったデータを扱うときはTypeScriptの`Type`で済ませていましたが、フロントエンドとバックエンドをAPIで通信するため、構造体にする必要があるそうです。
 
-##### インフラ
-サーバなど実機がかかわる。アプリを動かすサーバの管理、アクセスが増大したときに自動でサーバを増やしたり負荷を分散させるスケーリング、エラー発生時に何が原因だったか追跡するロギングなど。
+> [【Go/Gin】バインディングを使ったWeb API開発入門](https://qiita.com/torat3158/items/fece1b92f539b946af9d)
 
-##### セキュリティ
-情報の保護を行う。ユーザ認証、XSSやインジェクションを防ぐ入力チェック、暗号化などの通信保護など。
+`Gin`を使ってどうやってDBを操作するかを調べてみたら、`GORM`という`Go`で最も使われているライブラリがあるそうです。SQLを直接記入せずにDBのCRUDを操作できるらしいので、これを使用してみます。
 
-> 私がイメージしていたバックエンドは友人の影響もあって特にインフラ関係が強かったことが分かりました。調べてみて、私がこの中で興味を持ったのはビジネスロジックとセキュリティです。
+![a](/images/image-055.png)
 
-#### 言語
-フロントエンドでHTML,CSS,JS,TSを使用するようにバックエンドにも言語があり、それぞれのメリットデメリットがあります。
+#### 2. 環境構築
+`Next.js`と`Go`の環境構築を行います。
 
-| 言語 | 役割 | メリット | デメリット |
-| ---- | ---- | ---- | ---- |
-| Go | 並列処理、マイクロサービス | 実行速度が非常に速く、並列処理に強い。学習コストが低い。 | 記述がシンプルなので複雑なロジックを短く書くのが苦手。 |
-| TypeScript | Webアプリ | フロントエンドと同じ言語で書けるため、型定義を共有しやすい。 | シングルスレッドなので計算負荷が高い処理には不向き。 |
-| Python | AI、データ解析 | 豊富なライブラリがある。コードが読みやすく、開発スピードが速い。 | 実行速度がほかの言語に比べて遅い。静的型付けの厳格さが弱い。 |
-| Rust | 高パフォーマンス、安全性重視 | メモリ安全性が高く、非常に高速。需要が急増中。 | 所有権など理解が難しいものがあり、習得に時間がかかる。 |
-| Java | 大規模基幹システム | 高い信頼性、情報が豊富 | 記述量が多く、起動が重い。 |
+`npx create-next-app@latest frontend`で`Next.js`をセットアップします。
 
-> マイクロサービスとは？<br />
-> 巨大な１つのアプリを機能ごとに小さなアプリの集まりに分割して開発する手法のこと。
-> 特定の機能だけをスケーリングしたり言語を変えたりできる。しかし、サーバ同士の通信が複雑になり管理が大変。
+![alt text](image.png)
 
-今後自分がバックエンド開発の勉強をしていくならがGoいいと思いました。
+つぎに、`backend`ディレクトリを作成して、`Go`をモジュール化します。
 
-フロントエンドでNext.jsを今後も使用すると考えると、`Q.2`のVtuberのような短期間で大量アクセスがあるサイトや単語帳アプリのようなデータ抽出、成形など処理が多いシステムを作るときにGoの実行速度や並列処理が非常に役立つ。
+`mkdir backend`,`cd backend`,`go mod init backend`でモジュール化が完了します。
 
-また、Goはメモリの消費量が少なく、Dockerコンテナも軽量に作れるのでCloudFlareで経験したリソース制限を踏まえて、インフラコストを抑えながら安定稼働させるのに適していると感じました。
+![alt text](image-1.png)
 
-ツールのエコシステムとしてもNext.jsのバンドラでGoが使用されていた背景もある（現在はRustへの移行が進んでいますが）ため、私が普段使う環境との親和性も高いと思います。
+そしたら、`Gin`をインストールします。
 
-試しに、Goを使用してQiitaのトレンド記事のSSRから、それぞれの記事のタイトルと本文をスクレイピングするコードを作成してみました。
+![alt text](image-2.png)
+
+環境構築がこれで完了しました。
+
+#### 3. Goの開発
+つぎにToDoリストのバックエンド部分を開発していきます。`main.go`を作成し、パッケージを宣言して、importを記述しました。
 
 ```go
 package main
 
 import (
-	"fmt"
-	"log"
-	"github.com/gocolly/colly"
-	"net/url"
+	"net/http"
+	"github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
+```
 
-// qiita記事のスクレイパー
-func article(link string) {
-	//　インスタンス作成
-	c := colly.NewCollector()
-	url := link
-	c.OnError(func(_ *colly.Response, err error) {
-		log.Println("Something went wrong:", err)
-	})
-	// 取得するタグを指定できる
-	/*
-		title:style-wo2a1i
-		article:mdContent-inner
-	*/
-	// article
-	c.OnHTML(".mdContent-inner", func(e *colly.HTMLElement) {
-		fmt.Println(e.Text)
-	})
-	c.Visit(url)
-}
+その後、Todoリストの構造体を宣言しました。`gorm:"primaryKey"`はタグというそうで、明示的にどの型がこの変数に充てられているかを示しているそうです。
 
-// URLからクエリパラメータを削除する関数
-func cleanURL(rawURL string) string {
-	u, err := url.Parse(rawURL)
-	if err != nil {
-		return rawURL // エラー時は元のURLを返す
-	}
-	u.RawQuery = "" // クエリ部分を空にする
-	u.Fragment = "" // ついでに # 以降（フラグメント）も消す
-	return u.String()
-}
-
-func rss(){
-	c := colly.NewCollector()
-	// Atomフィード内の <entry> タグをターゲットにする
-	c.OnXML("//entry", func(e *colly.XMLElement) {
-		// <title>タグのテキストを取得
-		title := e.ChildText("title")
-		// <link>タグの href 属性を取得
-		// linkタグは複数ある場合があるが、通常は alternate が記事URL
-		rawlink := e.ChildAttr("link[@rel='alternate']", "href")
-		link := cleanURL(rawlink)
-		fmt.Printf("タイトル: %s\n", title)
-		fmt.Printf("リンク  : %s\n", link)
-		article(link)
-		fmt.Println("--------------------------------------------------")
-	})
-	// エラーハンドリング
-	c.OnError(func(r *colly.Response, err error) {
-		log.Println("Request URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
-	})
-	// QiitaのRSSフィードURLを指定して実行
-	c.Visit("https://qiita.com/popular-items/feed")
-}
-
-func main(){
-	rss()
+```go
+type Todo struct {
+	ID      uint   `gorm:"primaryKey" json:"id"`
+	Task    string `json:"task"`
+	Deleted bool   `json:"deleted"`
 }
 ```
 
-![画像000](/images/image-054.png)
+次にDBの初期化を行う関数を作成しました。
 
-実際にGoを使用してみて、`gocolly`というスクレイピングを行うOSSは使用したものの、非常に書きやすいと感じました。
+```go
+// 初期化
+func initialDB() {
+	var err error
+  // GORMのPostgreSQLドライバでtodoを開いて接続を行う。
+	db, err = gorm.Open(postgres.Open("todo.db"), &gorm.Config{})
+	if err != nil {
+    // エラー発生時にプログラムを止める
+		panic("failed to connect database")
+	}
+	// DBがなければ自動生成
+	db.AutoMigrate(&Todo{})
+}
 
-Tutorialも序盤のほうだけ目を通してみたが、C言語に似ている部分もあったため、自分にとって非常に学習しやすい言語だなと感じました。現在はあまりGoである恩恵を受けられてませんが、Goなら`goroutine`などで簡単に並列処理でスクレイピングを行えるようになると思いました。
+```
 
-#### DB
-データを保存し、効率よく取り出す。
+そのあと、todoを登録する関数と、todoを取得する関数を作成しました。
 
-| ツール | 役割 | メリット | デメリット |
-| ---- | ---- | ---- | ---- |
-| PostgreSQL | RDB | データの一貫性が高く、SQLによる複雑なクエリが可能。標準的。 | 大規模な負荷分散が難しい。 |
-| MongoDB | NoSQL | 高い拡張性。柔軟なデータ構造を作れる。 | 複雑なクエリが苦手。 |
-| Redis | キャッシュ, インメモリDB | 応答速度が極めて速い。セッション管理に最適。 | メモリ上で動作するため、大量のデータを永続化するのは不向き。 |
-| Supabase | BaaS | DB、認証、ストレージ、APIが一つで完結。構築が高速。Next.jsと親和性が高い。 | 複雑な独自のロジックを書こうとすると制約を受けやすい。 |
-| MinIO | オブジェクトストレージ | 画像や動画を保存する。ローカルでもテストしやすい。 | 管理コストが高い。データ保護を自力で行わないといけない。 |
+```go
+// Todo登録
+func createTodo(c *gin.Context) { // c *gin.Context: リクエスト、レスポンスを含んだGinオブジェクト
+	var todo Todo
+  // リクエストのJSONデータをTodoの構造体に変換する
+	if err := c.ShouldBindJSON(&todo); err != nil {
+		// クライアントにJSON形式のレスポンスを返す
+    c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+  // エラーがなければDBにデータを保存して成功の応答を送る
+	db.Create(&todo)
+	c.JSON(http.StatusAccepted, todo)
+}
 
-普段`Supabase`を利用していたため、どのような技術で動いているかを意識したことがなかったが、大量のアクセスやデータを扱うためには、用途やデータごとにDBを使い分ける必要があると感じた。
+// Todo取得
+func getTodo(c *gin.Context) {
+	var todo []Todo
+	// 削除済み(deleted = true)のデータを除外
+	db.Where("deleted = ?", false).Find(&todo)
+	c.JSON(http.StatusOK, todo)
+}
+```
 
-今後システムを作るときはGoから各DBのデータを取り出してAPIでフロントエンドに届けるという設計にすることでセキュリティ対策にもつながると思いました。
+そして、タスクが完了したときにリストからそのタスクを消す関数を作成します。タスクは物理的に削除するのではなく、`deleted`で論理的に削除する使用にします。
 
-#### API/通信プロトコル
-フロントエンドやほかのサービスとデータのやり取りをする。
+```go
+// Todo削除(Deleted -> True)
+func deleteTodo(c *gin.Context){
+	idParam := c.Param("id")
+  // idは文字列で返ってくるため数値に変換する
+	id, err := strconv.Atoi(idParam)
+  // 変換できなかったときはエラー
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	var todo Todo
+  // idに対応するデータがなかったらエラー
+	if err := db.First(&todo, id).Error; err != nil{
+		c.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
+		return
+	}
+  // deletedをtrueにする
+	db.Model(&todo).Update("deleted", true)
+	c.JSON(http.StatusOK, gin.H{"message": "Todo deleted"})
+}
+```
 
-| ツール | 役割 | メリット | デメリット |
-| ---- | ---- | ---- | ---- |
-| REST | 標準的なAPI通信 | シンプルで汎用的。ブラウザから直接たたきやすい。 | 必要なデータ以外も取得してしまいやすい。 |
-| gRPC | 高速な内部通信 | HTTP/2ベースで超高速。型定義で厳密。 | ブラウザからの直接通信が難しく、サーバ間の通信で使われる。 |
-| GraphQL | 柔軟なデータ取得 | クライアントが必要なデータだけを指定して習得できる。 | サーバ側の実装、設計がRESTより複雑になりやすい。 |
+最後にこれらを統括した`main()`を作成して、バックエンドは完成です。
 
-今まではNext.jsの中に`/api`を作って通信を行っていたが、今後、Next.jsとGoをAPIで切り離して本格的なバックエンドを作るなら用途に合わせて通信方法を選び、フロントエンドと通信を行う必要があると感じました。
+```go
+func main() {
+	r := gin.Default()
+	initialDB()
 
-#### インフラ
-アプリケーションを実行する場所を提供、管理する。
+	// データ追加
+	r.POST("/todo", createTodo)
+	// データ取得
+	r.GET("/todo", getTodo)
+	// データ削除
+	r.DELETE("/todo/:id", deleteTodo)
+	// サーバ起動
+	r.Run(":8080")
+}
+```
 
-| ツール | 役割 | メリット | デメリット |
-| ---- | ---- | ---- | ---- |
-| AWS | クラウドインフラ(PaaS,IaaS) | 必要なリソースを即座に確保可能。セキュリティや運用の自動化が簡単。 | 設定が複雑でコスト管理を怠ると高額になる。 |
-| Docker | コンテナ化 | 開発環境と本番環境を同じに保てる。配布が簡単。 | コンテナ管理の学習が必要。 |
-| Kubernetes | コンテナ運用管理 | 大規模なコンテナ群の自動復旧、スケーリング、デプロイ管理がしやすい。 | 構成が非常に複雑で運用には専門スキルが必要。 |
-| Vercel | ホスティング | デプロイが非常に簡単。エッジネットワークによる高速配信。Next.jsと親和性が高い。 | 長時間の重い処理には不向き。インフラの細かいカスタマイズができない。 |
+完成したコードをテストしてみます。ひとまず`go run .`で起動するか試してみます。
 
-> なんで開発環境と本番環境が同じだといいの？<br />
-> 従来の開発だと、開発PCと本番サーバでライブラリのバージョンが異なることがあり、不具合や予期しない挙動に悩まされることがあったが、Dockerでコンテナ化することでどちらも同じ環境が動くため、バグが減る。また、開発環境でテストを通したコンテナをそのまま本番で使用できるので、デプロイ作業が簡単になる。
+![alt text](image-5.png)
 
-友人がDockerやK8sをよく利用していましたが、今までどんなメリットがあるのか詳しく知りませんでした。調査してみて環境を開発と本番で統一できる点や、大規模なシステムを構築したときに管理がしやすい点が便利だとわかりました。
+エラーの内容を見てみると、idを文字型から数値に変換するときに使用していた`strconv`がimportされていませんでした。
 
-`Q.6`のCIパイプラインの構築でもDockerイメージとしてスキャンを行っているため、セキュリティ面でもコンテナを使用するのは非常に有益だということもわかりました。
+最後の行のエラーは記述ミスでした。
 
-#### システム構成
-試しに今回調査した上記のスタック群を利用して、どんなシステムを構築できそうか考えてみた。
+![alt text](image-6.png)
 
-Instagramのような大規模な画像投稿型のSNSを想定してみる。
+importに`"strconv"`を追加し、記述ミスを修正したのち、もう一度`go run .`を行いましたが再びエラーが発生。
 
-| 分野 | スタック | 役割 | メリット |
-| ---- | ---- | ---- | ---- |
-| フロントエンド | Next.js | ユーザが目にする画面を作成。 | |
-| バックエンド | Go+Gin/Docker | 投稿リクエスト受付、ユーザ認証検証、DBへの保存指示 | 並列処理を生かし、大量のユーザのいいねやコメントを効率よくさばける。 |
-| DB | PostogreSQL | ユーザ情報、フォロー関係、投稿キャプション、保存された画像のURL管理 | リレーショナルDBを使用することでフォロー関係などの複雑な関係性を正確に管理できる。 |
-| ストレージ | MinIO | DBには画像URLだけを書き込み、実態をここに置くことでDBの肥大化を防ぎ、コストを削減。 |
-| キャッシュ | Redis | ログインセッションの保持やタイムラインの一時保持 | 人気ユーザの投稿などアクセスが集中するデータを保持しているため、高速で表示できる。 |
+```terminal
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
 
-システム構成図はこのようになる。
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:   export GIN_MODE=release
+ - using code:  gin.SetMode(gin.ReleaseMode)
 
-![画像001](/images/image-001.png)
+panic: failed to connect database
 
-##### これらを選んだ理由
-大量のアクセスや画像などの重いファイルの配信に耐えることができるようにするためにこれらを選びました。
+goroutine 1 [running]:
+main.initialDB()
+        C:/Users/aokij/Documents/todo_securitycamp/backend/main.go:24 +0x174
+main.main()
+        C:/Users/aokij/Documents/todo_securitycamp/backend/main.go:99 +0x28
+exit status 2
+```
 
-これまでのように`BaaS`に一任するのではなく、ユーザのリクエストは並列処理に優れたGo(Gin)で高速にさばき、頻繁にアクセスされるデータ(人気投稿やアカウント)は`Redis`でキャッシュしてDBの負荷を下げます。
+Geminiにエラー内容について聞いてみると、`PostgreSQL`に接続できていないことが原因のエラーだということが分かりました。
 
-さらに画像の保存・配信は`MinIO`を使用してストレージにに分離することで、自分がVtuberサイトで犯してしまった画像読み込み処理がボトルネックになってサイト全体がダウンするという連鎖的な障害を未然に防ぐことができると考えました。
+```go
+db, err = gorm.Open(postgres.Open("todo.db"), &gorm.Config{})
+```
 
-##### 直面する課題
-フロントエンド開発を中心にやってきた私がこの構成でアプリを一から実装しようとしたとき、課題となるのは、システム間の通信とセキュリティだと思います。
+`todo.db`というのはSQLiteのファイルパスで、PostgreSQLでは`host=localhost user=todo password...`のようにTCP/IPで接続する必要があるようです。
 
-これまではSupabaseやVercelがやってくれていたため意識していませんでしたが、いざ自力で構築するとなると以下のような問題に直面するはずです。
+そもそも、PostgreSQLのサーバが起動していないと使用することができないとも言われました。せっかくの機会なので、Dockerを使用してPostgreSQLを使えるように変更してみようと思います。
 
-Next.jsとGo(Gin)の間で通信を切り離したとき、CORSの設定や、認証トークンの安全なやり取り(Cookieへの保存とXSS/CSRF対策の徹底など)、APIエンドポイントのアクセス制御などを自力で保護しなければならない。
+#### 4. Dockerを設定する
+というわけで、`Dockerfile`と`docker-compose.yml`を記述して、`PostgreSQL`を使用できるようにしてみます。
 
-PostgreSQL、Redis、MinIOをそれぞれDockerで立ち上げる際、不要なポートを開けたままにしたり、デフォルトの認証設定を放置してしまえば、せっかくのシステムが簡単に攻撃の標的になってしまう。
+> [docker-compose で Go + PostgreSQL の環境構築をする](https://zenn.dev/shimpo/articles/go-postgres-docker-20250316)
 
-動くものを作るだけでなく、そのシステムに潜む通信や設定の脆弱性を理解し、それらを防ぐためのセキュアな設計・構築ノウハウをセキュリティキャンプで学びたいです。それを吸収して、安全なシステムを構築できるフルスタックエンジニアへと成長したいと強く思っています。
+```dockerfile
+FROM golang:latest
 
-> 参考文献
-> 調査にあたり、用語や技術のリストアップにGeminiを使用しました。それ以降の調査は自力で行っています。
-> [GO - use cases](https://go.dev/solutions/use-cases)<br/>
-> [Why typescript](https://www.typescriptlang.org/ja/why-create-typescript/)<br/>
-> [バックエンド開発でPythonを習得するメリットとは?就活に向けて効率的に学ぶ方法](https://rookie.levtech.jp/guide/detail/60015/)<br/>
-> [Rust](https://rust-lang.org/ja/)<br/>
-> [Javaでなにができるの？メリット・デメリットなど初心者の方でもわかりやすく紹介!](https://portal.dymcareer.jp/column/engineer/java#point3)<br/>
-> [PostgreSQL](https://www.postgresql.org/)<br/>
-> [MongoDB](https://www.mongodb.com/ja-jp)<br/>
-> [Redis](https://redis.io/)<br/>
-> [MinIO](https://min.io/)<br/>
-> [Supabase](https://supabase.com/docs)<br/>
-> [Docker](https://docs.docker.com/get-started/docker-overview/)<br/>
-> [Kubernetes](https://kubernetes.io/docs/concepts/overview/#why-you-need-kubernetes-and-what-can-it-do)<br/>
-> [AWS](https://aws.amazon.com/architecture/)<br/>
-> [Vercel](https://vercel.com/docs)
+WORKDIR /app
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+CMD ["go","run","main.go"]
+```
+
+```yml
+services:
+  app:
+    build: ./backend
+    container_name: app
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://user:password@db:5432/todo?sslmode=disable
+  
+  db:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password 
+      POSTGRES_DB: todo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
+```
+
+その後、`main.go`を変更します。
+
+```go
+// 初期化
+func initialDB() {
+	var err error
+	db, err = gorm.Open(postgres.Open("host=db user=user password=password dbname=todo port=5432 sslmode=disable"), &gorm.Config{})
+```
+
+これでDockerを利用してPostgreSQLを使用できるように設定できたと思います。Dockerを起動してコンテナに入ることができるか確認してみます。
+
+![alt text](image-7.png)
+
+DockerDesktopの起動を忘れていました。起動して再度実行してみます。
+
+![alt text](image-8.png)
+
+起動することはできましたが、DBでエラーが発生しているので確認してみると、PostgreSQLのバージョンで問題が生じているようだったので、`image: postgres`を`image: postgres:17`に変更して再度実行してみます。
+
+![alt text](image-9.png)
+
+今度は無事に起動することができました。というわけで、dbに接続できるか試してみましょう。以下のコマンドをPowerShellで実行してみます。
+
+```powershell
+Invoke-RestMethod -Method POST -Uri "http://localhost:8080/todo" -ContentType "application/json; charset=utf-8" -Body (@{ task = "買い物"; deleted = $false } | ConvertTo-Json -Compress)
+```
+
+![alt text](image-11.png)
+
+無事、DBにデータが追加されました。つぎにGETでDB一覧を見れるか試してみます。
+
+```powershell
+Invoke-RestMethod -Method GET -Uri "http://localhost:8080/todo"
+```
+
+![alt text](image-12.png)
+
+成功しました。最後に、データを削除することができるか試してみます。
+
+```
+Invoke-RestMethod -Method DELETE -Uri "http://localhost:8080/todo/1"
+```
+
+![alt text](image-13.png)
+![alt text](image-14.png)
+
+無事データを削除することに成功しました。
+
+#### 5. Next.jsを開発する
+最後に、Next.js上でタスクの管理をできるようにします。
+
+```tsx
+"use client";
+import { useEffect, useState } from "react";
+
+type Todo = {
+  id: number;
+  task: string;
+  deleted: boolean;
+}
+
+export default function Todo(){
+  const[todo,setTodo] = useState<Todo[]>([]);
+  const[newTask,setNewTask] = useState("")
+  // todo取得
+  useEffect(() =>{
+    fetchTodo();
+  }, [])
+
+  const fetchTodo = async () =>{
+    const res = await fetch("http://localhost:8080/todo")
+    const data = await res.json();
+    setTodo(data)
+  }
+
+  const handleAddTodo = async () =>{
+    await fetch("http://localhost:8080/todo",{
+      method: "POST",
+      headers:{
+        "Content-Type":"application/json",
+      },
+      body: JSON.stringify({
+        task: newTask,
+        deleted: false,
+      })
+    })
+    setNewTask("")
+    fetchTodo()
+  }
+
+  const handleDeleted = async(todo:Todo) =>{
+    await fetch(`http://localhost:8080/todo/${todo.id}`,{
+      method: "DELETE",
+    })
+    fetchTodo()
+  }
+
+  return(
+    <>
+      <div className="flex items-center gap-2">
+        <input 
+          type="text" 
+          placeholder="タスク内容"
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+        />
+        <button onClick={()=>handleAddTodo()}>
+          追加
+        </button>
+      </div>
+      <div>
+        {todo.map((todo)=>(
+          <li 
+            key={todo.id}
+            className="flex items-center gap-2"
+          >
+            <p>{todo.task}</p>
+            <button onClick={() => handleDeleted(todo)}>
+              削除
+            </button>
+          </li>
+        ))}
+      </div>
+    </>
+  )
+}
+```
+
+作成したページを`npm run dev`で閲覧してみます。
+
+![alt text](image-15.png)
+![alt text](image-16.png)
+
+エラーを確認してみると、`localhost:3000`から`localhost:8080`への直接通信が許可されていないのが原因だったため、`main.go`を一部修正します。
+
+```go
+import (
+	"net/http"
+	"github.com/gin-contrib/cors" // 追加
+
+// 省略
+
+func main() {
+	r := gin.Default()
+    r.Use(cors.New(cors.Config{
+        AllowOrigins:     []string{"http://localhost:3000"},
+        AllowMethods:     []string{"GET", "POST", "DELETE", "PUT", "OPTIONS"},
+        AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+        AllowCredentials: true,
+    }))
+    initialDB()
+  // 省略
+```
+
+![alt text](image-17.png)
+
+無事にデータを見れるようになりました。
+
+![alt text](image-18.png)
+
+テキストボックスからのデータ挿入もできました。
+
+![alt text](image-19.png)
+
+データの削除もできました。最後に簡単にデザインを整えます。
+
+![alt text](image-20.png)
+
+これで、Todoアプリが完成しました。
+
+### 感想
+今回、初めてバックエンドの開発を自力で行ってみて、今まで自分が使っていた `Supabase` のようなBaaSの恩恵が身に染みて分かりました。
+
+初めての開発でわからないことだったのでQiitaなどの技術ブログやGeminiを利用しましたが、`docker-compose.yml`でコンテナの設定を行ったり、`go`でHTTP通信の記述をするなどいつも行っているフロントエンドとは違った面白さがありました。`CORS`やPostgresのバージョンなど、エラーが多発しましたが原因を調べて解決策を導く過程はシステムを一から組み立てている感じがしてとても面白かったです。
+
+ただ、なんとか動くものは作れたものの、今の構成では環境変数の管理やアクセス権限など、セキュリティの観点ではまだまだ甘く、実戦で耐えうる状態ではないと思います。
+今後、自分のような初学者が陥りやすい脆弱性のポイントなど、バックエンドの裏側で起きている仕組みをセキュリティキャンプの講義を通じて学んでいきたいと強く思いました。
+
+[リポジトリ](https://github.com/Raito5963/todo_securitycamp)
+
+### 出典
+- [Next.jsとGoでTODOアプリを作ろう！](https://zenn.dev/yumemi9808/books/26afc6094275a2)
+- [go mod tidyの役割](https://qiita.com/wangqijiangjun/items/28037d06efe86ec8dd0f)
+- [Go言語でCORSを実装してみよう！](https://zenn.dev/shuji0425/articles/654900a0028eca)
 
 # Q.4 (Webに関する脆弱性・攻撃技術の検証)
 ## 7 - Next.js, cache, and chains: the stale elixir
@@ -1028,6 +1264,17 @@ AIエージェントがファイルを削除したり、URLへデータを送信
 
 3. 問題が起きたら即停止できるようにする<br/>
 AIエージェントの権限を切る、トークン失効させる、影響範囲をすぐ調べられる仕組みを用意しておく。
+
+#### 7. AST木構造解析を用いたガードレール
+様々な対策を調べている中で、AIへの入力と出力をコンパイラで使われるAST木を用いて物理的にパースしてフィルタリングを行うのも効果上がるかもしれないと思った。
+
+1. 入力時のフィルタリング<br />
+AIエージェントに既存のコードを読み込ませる前に、Pythonなら`ast`モジュール等を使ってコードを一度抽象構文木にパースします。そして、プロンプトインジェクションの温床となる関数定義やクラス定義に付随するドキュメントやコメントを強制的にすべてパージします。その後、純粋なロジックだけのコードに再構築してからメインのAIエージェントに渡します。
+これにより、LLMの目に届く前に攻撃のトリガーが物理的に消滅するため、エージェントが汚染される可能性を限りなくゼロに近づけることができます。人間が読むわけではないので、コメントを一掃してコードの可読性が落ちても、AIの文脈理解には大きな問題はありません。
+
+2. 出力時の振る舞いを監視<br />
+AIエージェントが生成・修正したコードをマージする際、テキストベースの正規表現（`import os`が含まれているかなど）でチェックするのは、`__import__('o'+'s')`のような難読化で容易に突破されてしまいます。
+そこで、AIの出力コードを再度ASTにパースし、別のシステムにノード構造をチェックさせます。ASTレベルで見解釈すれば、どんなに表面を巧妙に難読化していても、最終的には必ず`ast.Call`や`ast.Import`といったノードとして解釈されます。これにより、通信を行う外部モジュールの呼び出しやシークレットへの不自然なアクセスを構造的に捕捉し、マージを自動でブロックできると思います。
 
 #### まとめ
 このシナリオに対しては、対策を一つだけ行うのではなく、いくつもの対策を組み合わせた多層防御の思想が重要である。AIエージェントは便利だが信用できないツールとして扱い、危険な操作は必ず人間やシステムで制御できる設計にすることが最も現実的な対策だと思う。
@@ -2173,9 +2420,18 @@ CIパイプラインによる脆弱性スキャンやSBOM生成は状態の可�
 自動化ツールを入れたから安全ではなく、出力された結果に対して、コンテキストを理解した開発者・セキュリティ担当者が判断を下すプロセスの設計や、トリアージ結果を機械的に共有・適用する仕組みの導入、あるいは最初からコンテナイメージを軽量化してノイズそのものを減らすといったアーキテクチャ設計が併せて必要であると強く感じました。
 
 ## (4) 外部委託や統合におけるリスクの増大と管理
+企業が急成長し、開発機能のアウトソースやM&Aによるシステム統合などを短期間で行う場面では、自社の直接的な管理下から外れたソースコードやインフラストラクチャが内部ネットワークに接続されることになります。これにより、自社だけでは把握しきれない見えないサプライチェーンリスクが急速に増大します。
 
-https://www.cyber.go.jp/pdf/policy/general/risktaiour7.pdf
-https://www.ipa.go.jp/jinzai/ics/core_human_resource/final_project/2022/ngi93u0000002jnu-att/000099269.pdf
-https://guardian.jpn.com/security/cloud-supply/supply-chain/column/executive/ma/
-https://www.jica.go.jp/about/announce/information/common/2024/__icsFiles/afieldfile/2025/02/12/1562763_02.pdf
+こうしたリスクを組織として管理、把握するためには、システム面での可視化と、運用プロセスの統一の2点が必要不可欠だと思います。
 
+まずシステム面での可視化について、外部から納品されるシステムや買収した企業のソフトウェアに対して、SBOMの提出と管理を必須にすることが重要だと思いました。内部構成がブラックボックスのまま運用を始めるのではなく、どのようなOSSや外部ライブラリが組み込まれているかを一覧化しておくことで、新たな脆弱性が報告された際の影響範囲を迅速に特定できるようになります。また、買収先の企業が把握しきれていない古いサーバや公開されたままのAPIが存在する可能性もあるので、外部公開資産を攻撃者の視点で把握するASMの仕組みを用いて、管理外のアセットを洗い出すことも重要です。
+
+次に運用プロセスの統一について、外部のシステムを自社のインフラに統合する際や、委託先から納品を受け入れるときには、自社のCIパイプラインを必ず通過させる仕組みの義務付けが必要です。開発元が自社か外部かにかかわらず、脆弱性スキャンやシークレット情報の検知といった最低限のセキュリティ基準を満たさなければデプロイできないようにシステム的に強制することで、属人的なチェック漏れや品質のばらつきを防ぐことができると思います。
+
+事業の拡大やシステムの統合フェーズでは、どうしても開発や移行のスピードが優先されてしまう。しかし、Q.6の3で行った検証からも分かるとおり、脆弱性管理は導入後のトリアージや対応判断という泥臭いな運用が不可欠です。外部から持ち込まれたシステムを無条件に信頼するのではなく、検証プロセスを自動化して組織全体に適用し続ける基準を作ることが、サプライチェーン全体のリスクを管理する上で最も重要だと思います。
+
+### 出典
+- [外務委託等における情報セキュリティ上のサプライチェーン・リスクへの対応のための仕様書策定手引書](https://www.cyber.go.jp/pdf/policy/general/risktaiour7.pdf)
+- [サプライチェーンsecurity教育資料](https://www.ipa.go.jp/jinzai/ics/core_human_resource/final_project/2022/ngi93u0000002jnu-att/000099269.pdf)
+- [M&Aで見落とすサプライチェーン攻撃リスク｜DD・子会社統合の要点を解説](https://guardian.jpn.com/security/cloud-supply/supply-chain/column/executive/ma/)
+- [外部委託等における情報セキュリティ上のサプライチェーン・リスク対応について](https://www.jica.go.jp/about/announce/information/common/2024/__icsFiles/afieldfile/2025/02/12/1562763_02.pdf)
