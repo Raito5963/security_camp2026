@@ -950,7 +950,7 @@ Nginx経由で`localhost`にアクセスして検証1の手順を踏めば攻撃
 次にBurpSuiteのHTTP Historyで通信内容を確認してみます。
 
 ![画像011](/images/image-053.png)
-![画像012](/images/image-012.png)
+![画像012](/images/image-050.png)
 
 通常の状態だと、MINE typeがHTMLですが、キャッシュポイズニング後はJSONに変化していることが分かります。これにてCVE-2024-46982の攻撃が完了しました。
 
